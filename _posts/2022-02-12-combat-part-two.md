@@ -3,6 +3,10 @@ layout: post
 title: "Combat Part 2: Processing Combat Rounds"
 ---
 
+_West Seattle. It was surprisingly nice out._
+
+# Forming Relationships Based On Mutual Anger
+
 After breaking down the requirements in the [last post](), I've started to write some unit tests for the Combat round. Right now, I'm thinking of having combat be represented by a pretty simple class that forms a relationship between an attacker and a defender, with a method that processes the combat on each tick.
 
 Something like:
@@ -33,7 +37,7 @@ Javascript doesn't support enums, so I may need to tweak these 'return values' a
   describe('if either combatant is dead', () => {
     describe ('if the attacker is dead', () => {
       beforeEach(() => {
-        char1.modifiableAttributes.hitpoints.current = 0;
+        char1.attributes.hitpoints.current = 0;
       });
 
       it('resolves the combat', () => {
@@ -46,7 +50,7 @@ Javascript doesn't support enums, so I may need to tweak these 'return values' a
 
     describe('if the defender is dead', () => {
       beforeEach(() => {
-        char2.modifiableAttributes.hitpoints.current = 0;
+        char2.attributes.hitpoints.current = 0;
       });
 
       it('resolves the combat', () => {
@@ -66,7 +70,7 @@ As I've been pondering this test, it's pretty easy to see that this is a fairly 
   describe('if the attacker damages the defender', () => {
     describe('if it kills the defender', () => {
       beforeEach(() => {
-        char2.modifiableAttributes.hitpoints.current = 1;
+        char2.attributes.hitpoints.current = 1;
       });
 
       it('resolves the combat', () => {
@@ -74,14 +78,14 @@ As I've been pondering this test, it's pretty easy to see that this is a fairly 
         uut.setNextDiceRoll(20); // TODO: Likely to change in some fashion
         const result = uut.processRound();
         assert(result);
-        assert(char2.modifiableAttributes.hitpoints.current === 0);
+        assert(char2.attributes.hitpoints.current === 0);
         assert(result === Combat.RESULT.DEFENDER_DEAD);
       });
     });
 
     describe('if it does not kill the defender', () => {
       beforeEach(() => {
-        char2.modifiableAttributes.hitpoints.current = 100;
+        char2.attributes.hitpoints.current = 100;
       });
 
       it('continues the combat', () => {
@@ -89,7 +93,7 @@ As I've been pondering this test, it's pretty easy to see that this is a fairly 
         uut.setNextDiceRoll(20); // TODO: Likely to change in some fashion
         const result = uut.processRound();
         assert(result);
-        assert(char2.modifiableAttributes.hitpoints.current !== 100);
+        assert(char2.attributes.hitpoints.current !== 100);
         assert(result === Combat.RESULT.CONTINUE);
       });
     });
@@ -107,7 +111,7 @@ If the attacker swings and misses, we want to 1/ make sure that the defender was
       uut.setNextDiceRoll(1); // TODO: Likely to change in some fashion
       const result = uut.processRound();
       assert(result);
-      assert(char2.modifiableAttributes.hitpoints.current === 6);
+      assert(char2.attributes.hitpoints.current === 6);
       assert(result === Combat.RESULT.CONTINUE);
     });
   });
